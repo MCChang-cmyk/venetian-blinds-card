@@ -1,0 +1,19 @@
+# 依賴套件目錄 (絕對不要推上 Git，別人在本機 npm install 就好)
+node_modules/
+
+# 編譯與打包產物 (這些是由 TS 和 Rollup 自動生成的，公開庫只留原始碼)
+dist/
+
+# 日誌檔案 (npm 報錯時產生的 log)
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 編輯器與系統暫存檔
+.DS_Store
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
