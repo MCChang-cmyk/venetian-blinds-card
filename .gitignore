@@ -4,9 +4,6 @@ node_modules/
 /yarn.lock
 /package-lock.json
 
-# 編譯輸出產物
-dist/
-
 # TypeScript 暫存與快取
 *.tsbuildinfo
 .tsconfig.tsbuildinfo
