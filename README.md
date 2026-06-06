@@ -1,98 +1,104 @@
 # Venetian Blinds & Roller Shades Card 🎨
 
-專為 Home Assistant 設計的極致高質感、扁平化（Flat Design）純視覺窗簾狀態整合卡片。本卡片不僅支援傳統的**百葉窗**，更完美相容**單層卷簾/蜂巢簾**以及頂級的**雙層蜂巢簾（日間/夜間簾）**，並內建完整的圖形化 UI 視覺編輯器。
+A premium, flat-design visual integration card designed for Home Assistant to represent blind states. This card supports not only traditional **Venetian blinds** but also **Single Roller/Honeycomb shades** and premium **Double Honeycomb shades (Day/Night shades)**, featuring a built-in graphical UI visual editor.
+
+---
+## Preview
+
+![Preview](images/preview.jpg)
+
+## ✨ Key Features
+
+* **Multiple Types**: Supports `Venetian`, `Roller`, or `Double Honeycomb` display modes.
+* 📐 **Visual UI Editor**: Aligned with modern 2026 Home Assistant components. Completely skip YAML with sliders to customize thickness, count, corner radius, and display proportions.
+* 🎨 **Premium Color Groups**: Unique collapsible color controls supporting palettes and independent "Opacity" sliders for fine-tuning.
+* 🧠 **Smart Physical Interaction**: In double-layer mode, it automatically calculates the boundary between the main height and the upper layer ratio, perfectly simulating realistic mechanical movement.
+* ⚡ **Advanced Action Handling**:
+  * **Tap**: In double-layer mode, quickly toggle the upper layer between 0%/100% or pop up middle rail controls; in single-layer mode, control full open/close.
+  * **Hold**: Press and hold anywhere for 0.5s to accurately trigger the official `More Info` console of the primary entity.
+* 💎 **Geometric Aesthetic**: Half-sized font spacing, perfectly aligned container and fabric corner radii, and zero-gap rendering for roller modes.
 
 ---
 
-## ✨ 核心特色
+## 🛠️ Installation
 
-* 🌟 **三合一多功能模式**：自由切換 `百葉窗`、`單層卷簾` 或 `雙層蜂巢簾` 顯示型態。
-* 📐 **圖形化 UI 視覺編輯器**：對齊 2026 年 Home Assistant 現代元件，完全拋棄 YAML，滑桿自訂厚度、數量、圓角與顯示比例。
-* 🎨 **極致色彩選單群組**：獨創摺疊式色彩控制，支援調色盤與獨立的「不透明度（Opacity）」滑桿微調。
-* 🧠 **雙層簾智能物理推擠**：雙層蜂巢簾模式下，自動計算主要高度實體與上層比例實體的交界，完美模擬擬真機械推擠伸縮。
-* ⚡ **頂級雙軌動作分流**：
-  * **點擊（Tap）**：雙層模式下輕點瞬移切換上層 0%/100% 或彈出中軌控制；單層模式下控制全開全關。
-  * **長壓（Hold）**：不論任何模式，按住面板 0.5 秒永遠精準彈出主要高度實體的官方 `More Info` 控制台。
-* 💎 **幾何美學極致優化**：字體留白精細減半、外框容器與布料圓角完美平行咬合、自動消除卷簾模式下的交界黑線空隙。
-
----
-
-## 🛠️ 安裝步驟
-
-### 方式 A：手動安裝 (Manual)
-1. 下載本專案編譯後的 `dist/venetian-blinds-card.js` 檔案。
-2. 將該檔案上傳至您的 Home Assistant 設定目錄中的 `www/` 資料夾（例如 `/config/www/venetian-blinds-card.js`）。
-3. 前往 Home Assistant 的 **設定 -> 儀表板 -> 右上角三個點 -> 資源管理**。
-4. 點擊「新增資源」，輸入以下內容並儲存：
+### Method A: Manual Installation
+1. Download the compiled `dist/venetian-blinds-card.js` from this project.
+2. Upload the file to your Home Assistant configuration directory under the `www/` folder (e.g., `/config/www/venetian-blinds-card.js`).
+3. Go to Home Assistant **Settings -> Dashboards -> Three-dot menu (top right) -> Resources**.
+4. Click "Add Resource", enter the following, and save:
    * **URL**: `/local/venetian-blinds-card.js?v=1.0.0`
-   * **資源類型**: `JavaScript 模組`
+   * **Resource Type**: `JavaScript Module`
 
 ---
 
-## ⚙️ 配置參數 (Configuration)
+## ⚙️ Configuration
 
-雖然本卡片支援 100% 圖形化介面設定，如果您希望使用 YAML 進行高級配置，參數對齊如下：
+While this card supports 100% graphical configuration via the UI, if you prefer using YAML for advanced setups, the parameters are as follows:
 
-| 參數名稱 | 類型 | 預設值 | 說明 |
+| Name | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `type` | string | **必填** | 必須為 `custom:venetian-blinds-card` |
-| `entity` | string | **必填** | 主要窗簾實體 ID（控制整體高度） |
-| `blind_type` | string | `venetian` | 窗簾類型：`venetian` (百葉), `roller` (單層卷簾), `double_honeycomb` (雙層簾) |
-| `secondary_entity` | string | optional | 雙層簾模式下專用：控制上層紗簾比例的實體 ID |
-| `name` | string | optional | 自訂顯示標題名稱，留空則顯示實體友善名稱 |
-| `show_name` | boolean | `true` | 是否顯示卡片最上方的標題文字 |
-| `orientation` | string | `horizontal` | 運行方向：`horizontal` (水平), `vertical` (垂直) |
-| `card_padding` | number | `16` | 內部窗框容器到卡片最外層邊緣的留白間距 (px) |
-| `slat_count` | number | `12` | 百葉窗專用：葉片總數量 |
-| `slat_height` | number | `12` | 百葉窗專用：葉片厚度粗細 (px) |
-| `slat_gap` | number | `4` | 百葉窗專用：葉片之間的間距 (px) |
-| `slat_corner_radius` | number | `2` | 窗簾與內部容器一體化邊緣圓角的修飾半徑 (px) |
-| `tap_action` | string | `more-info` | 點擊行為：`more-info` (詳細資訊), `open` (打開關閉), `sloped` (翻轉角度), `none` |
+| `type` | string | **Required** | Must be `custom:venetian-blinds-card` |
+| `entity` | string | **Required** | Primary cover entity ID (controls overall height) |
+| `blind_type` | string | `venetian` | Blind type: `venetian`, `roller`, `double_honeycomb` |
+| `secondary_entity` | string | optional | Used in double mode: entity ID for the upper layer ratio |
+| `name` | string | optional | Custom display name (defaults to entity's friendly name) |
+| `show_name` | boolean | `true` | Whether to show the title at the top of the card |
+| `orientation` | string | `horizontal` | Direction of operation: `horizontal`, `vertical` |
+| `card_padding` | number | `16` | Padding between the frame and card edge (px) |
+| `slat_count` | number | `12` | Venetian only: total number of slats |
+| `slat_height` | number | `12` | Venetian only: thickness of each slat (px) |
+| `slat_gap` | number | `4` | Venetian only: gap between slats (px) |
+| `slat_corner_radius` | number | `2` | Radius for the integrated blind and container edges (px) |
+| `tap_action` | string | `more-info` | Tap behavior: `more-info`, `open`, `sloped`, `none` |
 
-### 🎨 `colors_group` 進階色彩嵌套參數
+### 🎨 `colors_group` Advanced Color Parameters
 
 ```yaml
 colors_group:
-  slat_color: [149, 165, 166]            # 1. 窗簾布料/放下來的葉片顏色 (RGB 陣列)
-  slat_opacity: 1.0                      # 窗簾布料不透明度 (0.0 ~ 1.0)
-  slat_background_color: [255, 255, 255] # 2. 拉起後的隱藏葉片顏色 / 雙層簾下層顏色
-  slat_background_opacity: 0.03          # 隱藏葉片不透明度 / 雙層下層不透明度
-  container_background: [0, 0, 0]        # 3. 內部襯底容器窗框底色
-  container_opacity: 0.15                # 內部容器不透明度
-  card_background: [28, 28, 30]          # 4. 卡片最外層底色
-  card_opacity: 1.0                      # 卡片最外層底色不透明度
+  slat_color: [149, 165, 166]            # 1. Color of fabric/lowered slats (RGB array)
+  slat_opacity: 1.0                      # Fabric opacity (0.0 ~ 1.0)
+  slat_background_color: [255, 255, 255] # 2. Hidden slats/Lower layer color in double mode
+  slat_background_opacity: 0.03          # Hidden/Lower layer opacity
+  container_background: [0, 0, 0]        # 3. Inner frame/container background
+  container_opacity: 0.15                # Container opacity
+  card_background: [28, 28, 30]          # 4. Outermost card background
+  card_opacity: 1.0                      # Card background opacity
+```
 
-  💡 YAML 範例
-1. 頂級雙層蜂巢簾配置
+### 💡 YAML Examples
+1. Premium Double Honeycomb Configuration
 ```yaml
 type: custom:venetian-blinds-card
 blind_type: double_honeycomb
-entity: cover.living_room_blind_height     # 控制整體高度
-secondary_entity: cover.living_room_blind_day # 控制上層紗簾比例
-name: 客廳雙層簾
+entity: cover.living_room_blind_height     # Controls overall height
+secondary_entity: cover.living_room_blind_day # Controls upper layer ratio
+name: Living Room Double Blind
 show_name: true
 card_padding: 16
 slat_corner_radius: 12
-tap_action: open                           # 點擊切換紗簾 0%/100%，長按控制整體 More Info
+tap_action: open                           # Tap to toggle day shade, hold for More Info
 colors_group:
   slat_color: [240, 240, 240]
-  slat_opacity: 0.45                       # 唯美半透明紗感
+  slat_opacity: 0.45                       # Elegant translucent feel
   slat_background_color: [44, 62, 80]
-  slat_background_opacity: 1.0             # 100% 厚重遮光布
+  slat_background_opacity: 1.0             # 100% Blackout fabric
 ```
 
-2. 極簡扁平百葉窗配置
+2. Minimalist Flat Venetian Configuration
 ```yaml
 type: custom:venetian-blinds-card
 blind_type: venetian
 entity: cover.bedroom_blind
-show_name: false                           # 隱藏文字，達成極簡風格
+show_name: false                           # Hide text for minimalist style
 slat_count: 16
 slat_height: 8
 slat_gap: 5
 slat_corner_radius: 4
-tap_action: sloped                         # 點擊一下一鍵透光/翻轉角度
+tap_action: sloped                         # Tap to tilt slats/let light in
 ```
 
-📄 授權條款 (License)
-本專案採用 MIT License 授權開源發布。歡迎自由 Fork、修改與提交 Pull Request！
+---
+
+📄 **License**
+This project is released under the [MIT License](LICENSE). Feel free to fork, modify, and submit Pull Requests!
