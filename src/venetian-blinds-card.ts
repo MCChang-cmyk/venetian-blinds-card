@@ -49,6 +49,10 @@ export class VenetianBlindsCard extends LitElement {
   private _holdTimer?: number;
   private _isHolding = false;
 
+  // 🎯 新增：過載保護鎖狀態與安全閥計時器
+  @state() private _isWaiting = false;
+  private _unlockTimer?: number;
+
   public static getConfigElement() {
     return document.createElement('venetian-blinds-card-editor');
   }
@@ -103,8 +107,45 @@ export class VenetianBlindsCard extends LitElement {
     };
   }
 
+  // 監聽 HA 實體狀態更新
+  protected updated(changedProperties: Map<string | number | symbol, unknown>) {
+    super.updated(changedProperties);
+    
+    if (this.hass && this._config && this._isWaiting) {
+      const mainEntity = this.hass.states[this._config.entity];
+      const subEntityId = this._config.secondary_entity;
+      const subEntity = subEntityId ? this.hass.states[subEntityId] : null;
+
+      // 🎯 自動解鎖條件 A：如果主要實體或子實體進入了「運行中」狀態，代表馬達已響應指令，安全解鎖
+      const isMainMoving = mainEntity?.state === 'opening' || mainEntity?.state === 'closing';
+      const isSubMoving = subEntity?.state === 'opening' || subEntity?.state === 'closing';
+
+      if (isMainMoving || isSubMoving) {
+        this._clearUnlockTimer();
+        this._isWaiting = false;
+      }
+    }
+  }
+
+  private _startUnlockTimer() {
+    this._clearUnlockTimer();
+    // 🎯 自動解鎖條件 B：4秒強制防死鎖安全閥
+    this._unlockTimer = window.setTimeout(() => {
+      this._isWaiting = false;
+    }, 4000);
+  }
+
+  private _clearUnlockTimer() {
+    if (this._unlockTimer) {
+      window.clearTimeout(this._unlockTimer);
+      this._unlockTimer = undefined;
+    }
+  }
+
   private _handleTap(): void {
     if (this._isHolding) return; 
+    // 🎯 如果目前正處於「等待 MotionBlinds 響應」的閉鎖期，直接沒反應，拒絕下一次指令
+    if (this._isWaiting) return; 
 
     const action = this._config.tap_action || 'more-info';
     const mainEntityId = this._config.entity;
@@ -124,6 +165,10 @@ export class VenetianBlindsCard extends LitElement {
       if (bType === 'double_honeycomb' && subEntityId) {
         const subState = this.hass.states[subEntityId];
         if (subState) {
+          // 🎯 下鎖
+          this._isWaiting = true;
+          this._startUnlockTimer();
+
           const currentPos = subState.attributes.current_position ?? 0;
           const targetPos = currentPos > 50 ? 0 : 100;
           this.hass.callService('cover', 'set_cover_position', {
@@ -134,6 +179,10 @@ export class VenetianBlindsCard extends LitElement {
       } else {
         const mainState = this.hass.states[mainEntityId];
         if (mainState) {
+          // 🎯 下鎖
+          this._isWaiting = true;
+          this._startUnlockTimer();
+
           const isClosed = mainState.state === 'closed' || mainState.attributes.current_position === 0;
           const service = isClosed ? 'open_cover' : 'close_cover';
           this.hass.callService('cover', service, { entity_id: mainEntityId });
@@ -143,6 +192,10 @@ export class VenetianBlindsCard extends LitElement {
     else if (action === 'sloped' && bType === 'venetian') {
       const mainState = this.hass.states[mainEntityId];
       if (mainState) {
+        // 🎯 下鎖
+        this._isWaiting = true;
+        this._startUnlockTimer();
+
         const currentTilt = mainState.attributes.current_tilt_position ?? 0;
         const targetTilt = (currentTilt >= 45 && currentTilt <= 55) ? 0 : 50;
         this.hass.callService('cover', 'set_cover_tilt_position', {
@@ -294,13 +347,11 @@ export class VenetianBlindsCard extends LitElement {
 
     const displayName = this._config.name ?? mainEntity.attributes.friendly_name ?? this._config.entity;
     const paddingVal = `${this._config.card_padding ?? 16}px`;
-    
-    // 🎯 核心修復點：精準修正間距邏輯
-    // 只有在百葉窗（venetian）模式下才使用動態間距，卷簾（roller）和雙層簾（double_honeycomb）一律為 0px 以防色塊分離黏貼錯誤！
     const gapVal = bType === 'venetian' ? `${this._config.slat_gap ?? 4}px` : '0px';
 
     return html`
       <ha-card 
+        class="${this._isWaiting ? 'loading-lock' : ''}"
         style="background: ${cardBg}; padding: ${paddingVal};" 
         @click="${this._handleTap}"
         @mousedown="${this._handleHoldStart}"
@@ -325,6 +376,12 @@ export class VenetianBlindsCard extends LitElement {
       box-sizing: border-box;
       user-select: none;
       -webkit-user-select: none;
+      transition: opacity 0.3s ease;
+    }
+    /* 🎯 新增：鎖定狀態時的 CSS 美學反饋 */
+    ha-card.loading-lock {
+      opacity: 0.55;            /* 微微淡出，提示系統正在忙碌中 */
+      cursor: wait;             /* 滑鼠游標變成時鐘/等待符號 */
     }
     .card-header {
       color: var(--primary-text-color, white);
