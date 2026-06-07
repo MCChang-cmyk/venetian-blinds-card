@@ -1,4 +1,8 @@
 # Venetian Blinds & Roller Shades Card 🎨
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+![Version](https://img.shields.io/badge/version-v1.2.2-E13460)
+
+ [ [English](README.md) | [中文](README_zh-tw.md) ]
 
 A premium, flat-design visual integration card designed for Home Assistant to represent blind states. This card supports not only traditional **Venetian blinds** but also **Single Roller/Honeycomb shades** and premium **Double Honeycomb shades (Day/Night shades)**, featuring a built-in graphical UI visual editor.
 

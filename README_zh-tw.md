@@ -1,6 +1,6 @@
 # Venetian Blinds & Roller Shades Card 🎨 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
-![Version](https://img.shields.io/badge/version-v1.9.3-E13460)
+![Version](https://img.shields.io/badge/version-v1.2.2-E13460)
 
 
  [ [English](README.md) | [中文](README_zh-tw.md) ]
