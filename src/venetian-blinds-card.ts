@@ -250,7 +250,7 @@ export class VenetianBlindsCard extends LitElement {
     const mainEntity = this.hass.states[this._config.entity];
     if (!mainEntity) {
       // 🎯 修正：導入 i18n 多國語系動態錯誤訊息提示
-      return html`<ha-card class="error">${localize('common.missing_entity')}: ${this._config.entity}</ha-card>`;
+      return html`<ha-card class="error">${localize('common.missing_entity', this.hass.language)}: ${this._config.entity}</ha-card>`;
     }
 
     const bType = this._config.blind_type || 'venetian';

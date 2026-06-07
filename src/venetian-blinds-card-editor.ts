@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { localize } from './localize/localize'; // 🎯 引入翻譯器
+import { localize } from './localize/localize'; 
 
 @customElement('venetian-blinds-card-editor')
 export class VenetianBlindsCardEditor extends LitElement {
@@ -12,21 +12,23 @@ export class VenetianBlindsCardEditor extends LitElement {
   }
 
   private _schema(): any[] {
+    // 🎯 抓取即時語系
+    const lang = this.hass?.language || 'en';
     const bType = this._config?.blind_type || 'venetian';
     const isVenetian = bType === 'venetian';
     const isDouble = bType === 'double_honeycomb';
 
     const baseSchema: any[] = [
-      { name: 'entity', label: localize('editor.entity'), selector: { entity: { domain: 'cover' } } },
+      { name: 'entity', label: localize('editor.entity', lang), selector: { entity: { domain: 'cover' } } },
       {
         name: 'blind_type',
-        label: localize('editor.blind_type'),
+        label: localize('editor.blind_type', lang),
         selector: {
           select: {
             options: [
-              { value: 'venetian', label: localize('editor.types.venetian') },
-              { value: 'roller', label: localize('editor.types.roller') },
-              { value: 'double_honeycomb', label: localize('editor.types.double_honeycomb') }
+              { value: 'venetian', label: localize('editor.types.venetian', lang) },
+              { value: 'roller', label: localize('editor.types.roller', lang) },
+              { value: 'double_honeycomb', label: localize('editor.types.double_honeycomb', lang) }
             ]
           }
         }
@@ -34,7 +36,7 @@ export class VenetianBlindsCardEditor extends LitElement {
     ];
 
     if (isDouble) {
-      baseSchema.push({ name: 'secondary_entity', label: localize('editor.secondary_entity'), selector: { entity: { domain: 'cover' } } });
+      baseSchema.push({ name: 'secondary_entity', label: localize('editor.secondary_entity', lang), selector: { entity: { domain: 'cover' } } });
     }
 
     baseSchema.push(
@@ -45,8 +47,8 @@ export class VenetianBlindsCardEditor extends LitElement {
         selector: {
           select: {
             options: [
-              { value: 'horizontal', label: localize('editor.directions.horizontal') },
-              { value: 'vertical', label: localize('editor.directions.vertical') }
+              { value: 'horizontal', label: localize('editor.directions.horizontal', lang) },
+              { value: 'vertical', label: localize('editor.directions.vertical', lang) }
             ]
           }
         }
@@ -56,10 +58,10 @@ export class VenetianBlindsCardEditor extends LitElement {
         selector: {
           select: {
             options: [
-              { value: 'more-info', label: localize('editor.actions.more_info') },
-              { value: 'open', label: localize('editor.actions.open') },
-              ...(isVenetian ? [{ value: 'sloped', label: localize('editor.actions.sloped') }] : []),
-              { value: 'none', label: localize('editor.actions.none') }
+              { value: 'more-info', label: localize('editor.actions.more_info', lang) },
+              { value: 'open', label: localize('editor.actions.open', lang) },
+              ...(isVenetian ? [{ value: 'sloped', label: localize('editor.actions.sloped', lang) }] : []),
+              { value: 'none', label: localize('editor.actions.none', lang) }
             ]
           }
         }
@@ -82,20 +84,20 @@ export class VenetianBlindsCardEditor extends LitElement {
     baseSchema.push({
       name: 'colors_group',
       type: 'expandable',
-      title: localize('editor.groups.colors'),
+      title: localize('editor.groups.colors', lang),
       icon: 'mdi:palette',
       schema: [
-        { name: 'slat_color', label: isDouble ? localize('editor.colors.slat_color_double') : localize('editor.colors.slat_color_single'), selector: { color_rgb: {} } },
-        { name: 'slat_opacity', label: isDouble ? localize('editor.colors.slat_opacity_double') : localize('editor.colors.slat_opacity_single'), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
+        { name: 'slat_color', label: isDouble ? localize('editor.colors.slat_color_double', lang) : localize('editor.colors.slat_color_single', lang), selector: { color_rgb: {} } },
+        { name: 'slat_opacity', label: isDouble ? localize('editor.colors.slat_opacity_double', lang) : localize('editor.colors.slat_opacity_single', lang), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
         
-        { name: 'slat_background_color', label: isDouble ? localize('editor.colors.slat_bg_double') : localize('editor.colors.slat_bg_single'), selector: { color_rgb: {} } },
-        { name: 'slat_background_opacity', label: isDouble ? localize('editor.colors.slat_bg_opacity_double') : localize('editor.colors.slat_bg_opacity_single'), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
+        { name: 'slat_background_color', label: isDouble ? localize('editor.colors.slat_bg_double', lang) : localize('editor.colors.slat_bg_single', lang), selector: { color_rgb: {} } },
+        { name: 'slat_background_opacity', label: isDouble ? localize('editor.colors.slat_bg_opacity_double', lang) : localize('editor.colors.slat_bg_opacity_single', lang), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
         
-        { name: 'container_background', label: localize('editor.colors.container_bg'), selector: { color_rgb: {} } },
-        { name: 'container_opacity', label: localize('editor.colors.container_opacity'), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
+        { name: 'container_background', label: localize('editor.colors.container_bg', lang), selector: { color_rgb: {} } },
+        { name: 'container_opacity', label: localize('editor.colors.container_opacity', lang), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
         
-        { name: 'card_background', label: localize('editor.colors.card_bg'), selector: { color_rgb: {} } },
-        { name: 'card_opacity', label: localize('editor.colors.card_opacity'), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } }
+        { name: 'card_background', label: localize('editor.colors.card_bg', lang), selector: { color_rgb: {} } },
+        { name: 'card_opacity', label: localize('editor.colors.card_opacity', lang), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } }
       ]
     });
 
@@ -115,6 +117,7 @@ export class VenetianBlindsCardEditor extends LitElement {
   protected render() {
     if (!this.hass || !this._config) return html``;
 
+    const lang = this.hass?.language || 'en'; // 🎯 抓取即時語系
     const data = {
       blind_type: 'venetian',
       show_name: true,
@@ -139,15 +142,15 @@ export class VenetianBlindsCardEditor extends LitElement {
     const computeLabel = (schema: any) => {
       if (schema.label) return schema.label;
       const labels: Record<string, string> = {
-        name: localize('editor.name'),
-        show_name: localize('editor.show_name'),
-        card_padding: localize('editor.card_padding'),
-        orientation: localize('editor.orientation'),
-        slat_count: localize('editor.slat_count'),
-        slat_height: localize('editor.slat_height'),
-        slat_gap: localize('editor.slat_gap'),
-        slat_corner_radius: localize('editor.slat_corner_radius'),
-        tap_action: localize('editor.tap_action')
+        name: localize('editor.name', lang),
+        show_name: localize('editor.show_name', lang),
+        card_padding: localize('editor.card_padding', lang),
+        orientation: localize('editor.orientation', lang),
+        slat_count: localize('editor.slat_count', lang),
+        slat_height: localize('editor.slat_height', lang),
+        slat_gap: localize('editor.slat_gap', lang),
+        slat_corner_radius: localize('editor.slat_corner_radius', lang),
+        tap_action: localize('editor.tap_action', lang)
       };
       return labels[schema.name] || schema.name;
     };

@@ -194,22 +194,20 @@ var zhTW$1 = /*#__PURE__*/Object.freeze({
     editor: editor
 });
 
-// 語系字典映射
 const languages = {
     en: en$1,
     'zh-TW': zhTW$1,
-    'zh-Hant': zhTW$1 // 相容某些 HA 版本的繁體宣告
+    'zh-Hant': zhTW$1
 };
 /**
- * 核心翻譯函式
+ * 升級版翻譯函式：優先使用傳入的實時系統語系
  * @param stringKey 格式如 "editor.name"
- * @param search 要替換的變數 (選填)
- * @param replace 替換的內容 (選填)
- * @param fallbackLanguage 找不到語系時的防呆預設 (英文)
+ * @param hassLang 來自卡片的 this.hass.language (選填)
  */
-function localize(stringKey, search = '', replace = '', fallbackLanguage = 'en') {
-    // 從當前系統或 localStorage 撈取 HA 使用者的語系
-    const lang = (localStorage.getItem('selectedLanguage') || 'en').replace(/_/, '-');
+function localize(stringKey, hassLang, search = '', replace = '', fallbackLanguage = 'en') {
+    // 🎯 核心修正：優先使用傳入的 HA 實時語系，若無才降級使用 localStorage 或預設英文
+    const browserLang = (localStorage.getItem('selectedLanguage') || 'en').replace(/_/, '-');
+    const lang = (hassLang || browserLang).replace(/_/, '-');
     let translated;
     try {
         translated = stringKey.split('.').reduce((o, i) => o[i], languages[lang]);
@@ -217,7 +215,6 @@ function localize(stringKey, search = '', replace = '', fallbackLanguage = 'en')
     catch (e) {
         translated = undefined;
     }
-    // 如果當前語系找不到，嘗試去預設語系 (en) 找
     if (translated === undefined) {
         try {
             translated = stringKey.split('.').reduce((o, i) => o[i], languages[fallbackLanguage]);
@@ -239,35 +236,37 @@ let VenetianBlindsCardEditor = class VenetianBlindsCardEditor extends i {
         this._config = config;
     }
     _schema() {
+        // 🎯 抓取即時語系
+        const lang = this.hass?.language || 'en';
         const bType = this._config?.blind_type || 'venetian';
         const isVenetian = bType === 'venetian';
         const isDouble = bType === 'double_honeycomb';
         const baseSchema = [
-            { name: 'entity', label: localize('editor.entity'), selector: { entity: { domain: 'cover' } } },
+            { name: 'entity', label: localize('editor.entity', lang), selector: { entity: { domain: 'cover' } } },
             {
                 name: 'blind_type',
-                label: localize('editor.blind_type'),
+                label: localize('editor.blind_type', lang),
                 selector: {
                     select: {
                         options: [
-                            { value: 'venetian', label: localize('editor.types.venetian') },
-                            { value: 'roller', label: localize('editor.types.roller') },
-                            { value: 'double_honeycomb', label: localize('editor.types.double_honeycomb') }
+                            { value: 'venetian', label: localize('editor.types.venetian', lang) },
+                            { value: 'roller', label: localize('editor.types.roller', lang) },
+                            { value: 'double_honeycomb', label: localize('editor.types.double_honeycomb', lang) }
                         ]
                     }
                 }
             }
         ];
         if (isDouble) {
-            baseSchema.push({ name: 'secondary_entity', label: localize('editor.secondary_entity'), selector: { entity: { domain: 'cover' } } });
+            baseSchema.push({ name: 'secondary_entity', label: localize('editor.secondary_entity', lang), selector: { entity: { domain: 'cover' } } });
         }
         baseSchema.push({ name: 'name', selector: { text: {} } }, { name: 'show_name', selector: { boolean: {} } }, {
             name: 'orientation',
             selector: {
                 select: {
                     options: [
-                        { value: 'horizontal', label: localize('editor.directions.horizontal') },
-                        { value: 'vertical', label: localize('editor.directions.vertical') }
+                        { value: 'horizontal', label: localize('editor.directions.horizontal', lang) },
+                        { value: 'vertical', label: localize('editor.directions.vertical', lang) }
                     ]
                 }
             }
@@ -276,10 +275,10 @@ let VenetianBlindsCardEditor = class VenetianBlindsCardEditor extends i {
             selector: {
                 select: {
                     options: [
-                        { value: 'more-info', label: localize('editor.actions.more_info') },
-                        { value: 'open', label: localize('editor.actions.open') },
-                        ...(isVenetian ? [{ value: 'sloped', label: localize('editor.actions.sloped') }] : []),
-                        { value: 'none', label: localize('editor.actions.none') }
+                        { value: 'more-info', label: localize('editor.actions.more_info', lang) },
+                        { value: 'open', label: localize('editor.actions.open', lang) },
+                        ...(isVenetian ? [{ value: 'sloped', label: localize('editor.actions.sloped', lang) }] : []),
+                        { value: 'none', label: localize('editor.actions.none', lang) }
                     ]
                 }
             }
@@ -291,17 +290,17 @@ let VenetianBlindsCardEditor = class VenetianBlindsCardEditor extends i {
         baseSchema.push({
             name: 'colors_group',
             type: 'expandable',
-            title: localize('editor.groups.colors'),
+            title: localize('editor.groups.colors', lang),
             icon: 'mdi:palette',
             schema: [
-                { name: 'slat_color', label: isDouble ? localize('editor.colors.slat_color_double') : localize('editor.colors.slat_color_single'), selector: { color_rgb: {} } },
-                { name: 'slat_opacity', label: isDouble ? localize('editor.colors.slat_opacity_double') : localize('editor.colors.slat_opacity_single'), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
-                { name: 'slat_background_color', label: isDouble ? localize('editor.colors.slat_bg_double') : localize('editor.colors.slat_bg_single'), selector: { color_rgb: {} } },
-                { name: 'slat_background_opacity', label: isDouble ? localize('editor.colors.slat_bg_opacity_double') : localize('editor.colors.slat_bg_opacity_single'), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
-                { name: 'container_background', label: localize('editor.colors.container_bg'), selector: { color_rgb: {} } },
-                { name: 'container_opacity', label: localize('editor.colors.container_opacity'), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
-                { name: 'card_background', label: localize('editor.colors.card_bg'), selector: { color_rgb: {} } },
-                { name: 'card_opacity', label: localize('editor.colors.card_opacity'), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } }
+                { name: 'slat_color', label: isDouble ? localize('editor.colors.slat_color_double', lang) : localize('editor.colors.slat_color_single', lang), selector: { color_rgb: {} } },
+                { name: 'slat_opacity', label: isDouble ? localize('editor.colors.slat_opacity_double', lang) : localize('editor.colors.slat_opacity_single', lang), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
+                { name: 'slat_background_color', label: isDouble ? localize('editor.colors.slat_bg_double', lang) : localize('editor.colors.slat_bg_single', lang), selector: { color_rgb: {} } },
+                { name: 'slat_background_opacity', label: isDouble ? localize('editor.colors.slat_bg_opacity_double', lang) : localize('editor.colors.slat_bg_opacity_single', lang), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
+                { name: 'container_background', label: localize('editor.colors.container_bg', lang), selector: { color_rgb: {} } },
+                { name: 'container_opacity', label: localize('editor.colors.container_opacity', lang), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
+                { name: 'card_background', label: localize('editor.colors.card_bg', lang), selector: { color_rgb: {} } },
+                { name: 'card_opacity', label: localize('editor.colors.card_opacity', lang), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } }
             ]
         });
         return baseSchema;
@@ -318,6 +317,7 @@ let VenetianBlindsCardEditor = class VenetianBlindsCardEditor extends i {
     render() {
         if (!this.hass || !this._config)
             return b ``;
+        const lang = this.hass?.language || 'en'; // 🎯 抓取即時語系
         const data = {
             blind_type: 'venetian',
             show_name: true,
@@ -342,15 +342,15 @@ let VenetianBlindsCardEditor = class VenetianBlindsCardEditor extends i {
             if (schema.label)
                 return schema.label;
             const labels = {
-                name: localize('editor.name'),
-                show_name: localize('editor.show_name'),
-                card_padding: localize('editor.card_padding'),
-                orientation: localize('editor.orientation'),
-                slat_count: localize('editor.slat_count'),
-                slat_height: localize('editor.slat_height'),
-                slat_gap: localize('editor.slat_gap'),
-                slat_corner_radius: localize('editor.slat_corner_radius'),
-                tap_action: localize('editor.tap_action')
+                name: localize('editor.name', lang),
+                show_name: localize('editor.show_name', lang),
+                card_padding: localize('editor.card_padding', lang),
+                orientation: localize('editor.orientation', lang),
+                slat_count: localize('editor.slat_count', lang),
+                slat_height: localize('editor.slat_height', lang),
+                slat_gap: localize('editor.slat_gap', lang),
+                slat_corner_radius: localize('editor.slat_corner_radius', lang),
+                tap_action: localize('editor.tap_action', lang)
             };
             return labels[schema.name] || schema.name;
         };
@@ -563,7 +563,7 @@ let VenetianBlindsCard = class VenetianBlindsCard extends i {
         const mainEntity = this.hass.states[this._config.entity];
         if (!mainEntity) {
             // 🎯 修正：導入 i18n 多國語系動態錯誤訊息提示
-            return b `<ha-card class="error">${localize('common.missing_entity')}: ${this._config.entity}</ha-card>`;
+            return b `<ha-card class="error">${localize('common.missing_entity', this.hass.language)}: ${this._config.entity}</ha-card>`;
         }
         const bType = this._config.blind_type || 'venetian';
         const isVertical = this._config.orientation === 'vertical';
