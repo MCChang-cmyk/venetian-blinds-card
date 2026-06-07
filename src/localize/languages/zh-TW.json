@@ -1,0 +1,51 @@
+{
+  "common": {
+    "missing_entity": "找不到指定實體"
+  },
+  "editor": {
+    "entity": "主要實體 (控制整體高度)",
+    "blind_type": "窗簾類型",
+    "secondary_entity": "上層比例實體 (控制紗簾區間)",
+    "name": "自訂顯示名稱 (選填)",
+    "show_name": "顯示卡片標題名稱",
+    "orientation": "顯示方向",
+    "tap_action": "點擊卡片後的行為",
+    "card_padding": "顯示比例 (框線間距)",
+    "slat_count": "葉片總數量",
+    "slat_height": "葉片厚度",
+    "slat_gap": "葉片間距",
+    "slat_corner_radius": "窗簾邊緣圓角",
+    "types": {
+      "venetian": "百葉窗",
+      "roller": "卷簾 / 蜂巢簾",
+      "double_honeycomb": "雙層蜂巢簾"
+    },
+    "actions": {
+      "more_info": "詳細資訊 (More Info)",
+      "open": "打開關閉窗簾",
+      "sloped": "切換角度",
+      "none": "無動作 (None)"
+    },
+    "directions": {
+      "horizontal": "水平",
+      "vertical": "垂直"
+    },
+    "groups": {
+      "colors": "色彩設定"
+    },
+    "colors": {
+      "slat_color_double": "1. 上層布料顏色 (紗簾)",
+      "slat_color_single": "1. 窗簾布料/放下來的顏色",
+      "slat_opacity_double": "上層不透明度",
+      "slat_opacity_single": "布料不透明度",
+      "slat_bg_double": "2. 下層布料顏色 (遮光)",
+      "slat_bg_single": "2. 拉起後的隱藏葉片顏色",
+      "slat_bg_opacity_double": "下層不透明度",
+      "slat_bg_opacity_single": "隱藏葉片不透明度",
+      "container_bg": "3. 內部容器底色",
+      "container_opacity": "內部容器不透明度",
+      "card_bg": "4. 卡片最外層底色",
+      "card_opacity": "卡片底色不透明度"
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "common": {
+    "missing_entity": "Entity not found"
+  },
+  "editor": {
+    "entity": "Primary Entity (Height Control)",
+    "blind_type": "Blind Type",
+    "secondary_entity": "Secondary Entity (Top Slat Ratio)",
+    "name": "Custom Name (Optional)",
+    "show_name": "Show Card Title",
+    "orientation": "Direction",
+    "tap_action": "Tap Action",
+    "card_padding": "Card Padding",
+    "slat_count": "Slat Count",
+    "slat_height": "Slat Thickness",
+    "slat_gap": "Slat Gap",
+    "slat_corner_radius": "Corner Radius",
+    "types": {
+      "venetian": "Venetian Blinds",
+      "roller": "Roller Shades",
+      "double_honeycomb": "Double Honeycomb Blinds"
+    },
+    "actions": {
+      "more_info": "More Info",
+      "open": "Open / Close",
+      "sloped": "Tilt Angle (Sloped)",
+      "none": "None"
+    },
+    "directions": {
+      "horizontal": "Horizontal",
+      "vertical": "Vertical"
+    },
+    "groups": {
+      "colors": "Color Settings"
+    },
+    "colors": {
+      "slat_color_double": "1. Top Slat Color (Sheer)",
+      "slat_color_single": "1. Blade / Fabric Color",
+      "slat_opacity_double": "Top Slat Opacity",
+      "slat_opacity_single": "Fabric Opacity",
+      "slat_bg_double": "2. Bottom Slat Color (Blackout)",
+      "slat_bg_single": "2. Hidden Slat Color",
+      "slat_bg_opacity_double": "Bottom Slat Opacity",
+      "slat_bg_opacity_single": "Hidden Slat Opacity",
+      "container_bg": "3. Container Background",
+      "container_opacity": "Container Opacity",
+      "card_bg": "4. Card Background",
+      "card_opacity": "Card Opacity"
+    }
+  }
+}

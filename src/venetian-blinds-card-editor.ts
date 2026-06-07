@@ -1,5 +1,6 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { localize } from './localize/localize'; // 🎯 引入翻譯器
 
 @customElement('venetian-blinds-card-editor')
 export class VenetianBlindsCardEditor extends LitElement {
@@ -16,16 +17,16 @@ export class VenetianBlindsCardEditor extends LitElement {
     const isDouble = bType === 'double_honeycomb';
 
     const baseSchema: any[] = [
-      { name: 'entity', label: '主要實體 (控制整體窗簾高度)', selector: { entity: { domain: 'cover' } } },
+      { name: 'entity', label: localize('editor.entity'), selector: { entity: { domain: 'cover' } } },
       {
         name: 'blind_type',
-        label: '窗簾類型',
+        label: localize('editor.blind_type'),
         selector: {
           select: {
             options: [
-              { value: 'venetian', label: '百葉窗 Mode' },
-              { value: 'roller', label: '卷簾 / 蜂巢簾 Mode' },
-              { value: 'double_honeycomb', label: '雙層蜂巢簾 Mode 🎨' }
+              { value: 'venetian', label: localize('editor.types.venetian') },
+              { value: 'roller', label: localize('editor.types.roller') },
+              { value: 'double_honeycomb', label: localize('editor.types.double_honeycomb') }
             ]
           }
         }
@@ -33,7 +34,7 @@ export class VenetianBlindsCardEditor extends LitElement {
     ];
 
     if (isDouble) {
-      baseSchema.push({ name: 'secondary_entity', label: '上層比例實體 (控制紗簾區間)', selector: { entity: { domain: 'cover' } } });
+      baseSchema.push({ name: 'secondary_entity', label: localize('editor.secondary_entity'), selector: { entity: { domain: 'cover' } } });
     }
 
     baseSchema.push(
@@ -44,8 +45,8 @@ export class VenetianBlindsCardEditor extends LitElement {
         selector: {
           select: {
             options: [
-              { value: 'horizontal', label: '水平' },
-              { value: 'vertical', label: '垂直' }
+              { value: 'horizontal', label: localize('editor.directions.horizontal') },
+              { value: 'vertical', label: localize('editor.directions.vertical') }
             ]
           }
         }
@@ -55,10 +56,10 @@ export class VenetianBlindsCardEditor extends LitElement {
         selector: {
           select: {
             options: [
-              { value: 'more-info', label: '詳細資訊 (More Info)' },
-              { value: 'open', label: '打開關閉窗簾' },
-              ...(isVenetian ? [{ value: 'sloped', label: '切換角度' }] : []),
-              { value: 'none', label: '無動作 (None)' }
+              { value: 'more-info', label: localize('editor.actions.more_info') },
+              { value: 'open', label: localize('editor.actions.open') },
+              ...(isVenetian ? [{ value: 'sloped', label: localize('editor.actions.sloped') }] : []),
+              { value: 'none', label: localize('editor.actions.none') }
             ]
           }
         }
@@ -66,7 +67,6 @@ export class VenetianBlindsCardEditor extends LitElement {
       { name: 'card_padding', selector: { number: { min: 0, max: 40, unit_of_measurement: 'px', mode: 'slider' } } }
     );
 
-    // 🎯 幾何控制動態分流
     if (isVenetian) {
       baseSchema.push(
         { name: 'slat_count', selector: { number: { min: 2, max: 50, mode: 'box' } } },
@@ -75,7 +75,6 @@ export class VenetianBlindsCardEditor extends LitElement {
       );
     }
 
-    // 🎯 修正：將圓角控制獨立出來，不論是百葉窗還是卷簾、雙層簾，全面開放微調！
     baseSchema.push(
       { name: 'slat_corner_radius', selector: { number: { min: 0, max: 15, unit_of_measurement: 'px', mode: 'slider' } } }
     );
@@ -83,20 +82,20 @@ export class VenetianBlindsCardEditor extends LitElement {
     baseSchema.push({
       name: 'colors_group',
       type: 'expandable',
-      title: '色彩設定',
+      title: localize('editor.groups.colors'),
       icon: 'mdi:palette',
       schema: [
-        { name: 'slat_color', label: isDouble ? '1. 上層布料顏色 (紗簾)' : '1. 窗簾布料/放下來的顏色', selector: { color_rgb: {} } },
-        { name: 'slat_opacity', label: isDouble ? '上層不透明度' : '布料不透明度', selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
+        { name: 'slat_color', label: isDouble ? localize('editor.colors.slat_color_double') : localize('editor.colors.slat_color_single'), selector: { color_rgb: {} } },
+        { name: 'slat_opacity', label: isDouble ? localize('editor.colors.slat_opacity_double') : localize('editor.colors.slat_opacity_single'), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
         
-        { name: 'slat_background_color', label: isDouble ? '2. 下層布料顏色 (遮光)' : '2. 拉起後的隱藏葉片顏色', selector: { color_rgb: {} } },
-        { name: 'slat_background_opacity', label: isDouble ? '下層不透明度' : '隱藏葉片不透明度', selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
+        { name: 'slat_background_color', label: isDouble ? localize('editor.colors.slat_bg_double') : localize('editor.colors.slat_bg_single'), selector: { color_rgb: {} } },
+        { name: 'slat_background_opacity', label: isDouble ? localize('editor.colors.slat_bg_opacity_double') : localize('editor.colors.slat_bg_opacity_single'), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
         
-        { name: 'container_background', label: '3. 內部容器底色', selector: { color_rgb: {} } },
-        { name: 'container_opacity', label: '內部容器不透明度', selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
+        { name: 'container_background', label: localize('editor.colors.container_bg'), selector: { color_rgb: {} } },
+        { name: 'container_opacity', label: localize('editor.colors.container_opacity'), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } },
         
-        { name: 'card_background', label: '4. 卡片最外層底色', selector: { color_rgb: {} } },
-        { name: 'card_opacity', label: '卡片底色不透明度', selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } }
+        { name: 'card_background', label: localize('editor.colors.card_bg'), selector: { color_rgb: {} } },
+        { name: 'card_opacity', label: localize('editor.colors.card_opacity'), selector: { number: { min: 0, max: 1, step: 0.05, mode: 'slider' } } }
       ]
     });
 
@@ -140,16 +139,15 @@ export class VenetianBlindsCardEditor extends LitElement {
     const computeLabel = (schema: any) => {
       if (schema.label) return schema.label;
       const labels: Record<string, string> = {
-        entity: '主要實體',
-        name: '自訂顯示名稱 (選填)',
-        show_name: '顯示卡片標題名稱',
-        tap_action: '點擊卡片後的行為',
-        card_padding: '顯示比例',
-        orientation: '顯示方向',
-        slat_count: '葉片總數量',
-        slat_height: '葉片厚度',
-        slat_gap: '葉片間距',
-        slat_corner_radius: '窗簾邊緣圓角' // 繁體在地化修飾
+        name: localize('editor.name'),
+        show_name: localize('editor.show_name'),
+        card_padding: localize('editor.card_padding'),
+        orientation: localize('editor.orientation'),
+        slat_count: localize('editor.slat_count'),
+        slat_height: localize('editor.slat_height'),
+        slat_gap: localize('editor.slat_gap'),
+        slat_corner_radius: localize('editor.slat_corner_radius'),
+        tap_action: localize('editor.tap_action')
       };
       return labels[schema.name] || schema.name;
     };

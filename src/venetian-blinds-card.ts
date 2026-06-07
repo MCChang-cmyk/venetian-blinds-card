@@ -1,6 +1,7 @@
 import './venetian-blinds-card-editor';
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { localize } from './localize/localize'; // 🎯 注入多國語系核心翻譯器
 
 interface VenetianBlindsCardConfig {
   type: string;
@@ -49,7 +50,7 @@ export class VenetianBlindsCard extends LitElement {
   private _holdTimer?: number;
   private _isHolding = false;
 
-  // 🎯 新增：過載保護鎖狀態與安全閥計時器
+  // 🎯 過載保護鎖狀態與安全閥計時器
   @state() private _isWaiting = false;
   private _unlockTimer?: number;
 
@@ -107,7 +108,7 @@ export class VenetianBlindsCard extends LitElement {
     };
   }
 
-  // 監聽 HA 實體狀態更新
+  // 監聽 HA 實體狀態更新以便自動解鎖
   protected updated(changedProperties: Map<string | number | symbol, unknown>) {
     super.updated(changedProperties);
     
@@ -116,7 +117,6 @@ export class VenetianBlindsCard extends LitElement {
       const subEntityId = this._config.secondary_entity;
       const subEntity = subEntityId ? this.hass.states[subEntityId] : null;
 
-      // 🎯 自動解鎖條件 A：如果主要實體或子實體進入了「運行中」狀態，代表馬達已響應指令，安全解鎖
       const isMainMoving = mainEntity?.state === 'opening' || mainEntity?.state === 'closing';
       const isSubMoving = subEntity?.state === 'opening' || subEntity?.state === 'closing';
 
@@ -129,10 +129,9 @@ export class VenetianBlindsCard extends LitElement {
 
   private _startUnlockTimer() {
     this._clearUnlockTimer();
-    // 🎯 自動解鎖條件 B：4秒強制防死鎖安全閥
     this._unlockTimer = window.setTimeout(() => {
       this._isWaiting = false;
-    }, 4000);
+    }, 4000); // 4秒強制防死鎖安全閥
   }
 
   private _clearUnlockTimer() {
@@ -144,8 +143,7 @@ export class VenetianBlindsCard extends LitElement {
 
   private _handleTap(): void {
     if (this._isHolding) return; 
-    // 🎯 如果目前正處於「等待 MotionBlinds 響應」的閉鎖期，直接沒反應，拒絕下一次指令
-    if (this._isWaiting) return; 
+    if (this._isWaiting) return; // 處於過載鎖定狀態時直接無視點擊
 
     const action = this._config.tap_action || 'more-info';
     const mainEntityId = this._config.entity;
@@ -165,7 +163,6 @@ export class VenetianBlindsCard extends LitElement {
       if (bType === 'double_honeycomb' && subEntityId) {
         const subState = this.hass.states[subEntityId];
         if (subState) {
-          // 🎯 下鎖
           this._isWaiting = true;
           this._startUnlockTimer();
 
@@ -179,7 +176,6 @@ export class VenetianBlindsCard extends LitElement {
       } else {
         const mainState = this.hass.states[mainEntityId];
         if (mainState) {
-          // 🎯 下鎖
           this._isWaiting = true;
           this._startUnlockTimer();
 
@@ -192,7 +188,6 @@ export class VenetianBlindsCard extends LitElement {
     else if (action === 'sloped' && bType === 'venetian') {
       const mainState = this.hass.states[mainEntityId];
       if (mainState) {
-        // 🎯 下鎖
         this._isWaiting = true;
         this._startUnlockTimer();
 
@@ -212,7 +207,7 @@ export class VenetianBlindsCard extends LitElement {
     
     this._holdTimer = window.setTimeout(() => {
       this._isHolding = true;
-      this._fireMoreInfo(this._config.entity);
+      this._fireMoreInfo(this._config.entity); // 長按永遠指定為主要實體
     }, 500); 
   }
 
@@ -254,7 +249,8 @@ export class VenetianBlindsCard extends LitElement {
 
     const mainEntity = this.hass.states[this._config.entity];
     if (!mainEntity) {
-      return html`<ha-card class="error">找不到主要實體: ${this._config.entity}</ha-card>`;
+      // 🎯 修正：導入 i18n 多國語系動態錯誤訊息提示
+      return html`<ha-card class="error">${localize('common('missing_entity')')}: ${this._config.entity}</ha-card>`;
     }
 
     const bType = this._config.blind_type || 'venetian';
@@ -378,10 +374,9 @@ export class VenetianBlindsCard extends LitElement {
       -webkit-user-select: none;
       transition: opacity 0.3s ease;
     }
-    /* 🎯 新增：鎖定狀態時的 CSS 美學反饋 */
     ha-card.loading-lock {
-      opacity: 0.55;            /* 微微淡出，提示系統正在忙碌中 */
-      cursor: wait;             /* 滑鼠游標變成時鐘/等待符號 */
+      opacity: 0.55;            
+      cursor: wait;             
     }
     .card-header {
       color: var(--primary-text-color, white);
