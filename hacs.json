@@ -1,5 +1,6 @@
 {
-  "name": "Venetian Blinds Card",
+  "name": "Venetian Blinds & Roller Shades Card",
+  "type": "plugin",
   "filename": "venetian-blinds-card.js",
   "render_readme": true
 }
